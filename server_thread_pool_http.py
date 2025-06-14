@@ -4,7 +4,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from http import HttpServer
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(threadName)s - %(levelname)s - %(message)s",
@@ -21,7 +20,6 @@ def ProcessTheClient(connection, address):
             data = connection.recv(1024)
             if data:
                 rcv += data
-                # Check if we have received the full headers
                 if b"\r\n\r\n" in rcv:
                     header_part, _, body_part = rcv.partition(b"\r\n\r\n")
                     decoded_header = header_part.decode()
@@ -34,7 +32,6 @@ def ProcessTheClient(connection, address):
 
                     if content_len_str:
                         content_len = int(content_len_str[0].split(":")[1].strip())
-                        # Wait for the rest of the body if not fully received
                         while len(body_part) < content_len:
                             more_data = connection.recv(1024)
                             if not more_data:
@@ -42,7 +39,6 @@ def ProcessTheClient(connection, address):
                             rcv += more_data
                             body_part += more_data
 
-                    # Once all data is received
                     hasil = httpserver.proses(rcv.decode(errors="ignore"))
                     connection.sendall(hasil)
                     break
